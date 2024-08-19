@@ -10,6 +10,9 @@ inputs:
   secretsfile:
     description: 'Path of the secret file to be fetched' #Comma separated list of secret keys can be specified
     required: false
+  key_vault_with_secret_file_pairs:
+    description: 'List of key vaults and secret files to be fetched'
+    required: false
 branding:
   icon: 'akv.svg'
   color: 'blue'
