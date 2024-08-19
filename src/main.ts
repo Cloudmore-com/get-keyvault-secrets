@@ -40,7 +40,7 @@ async function run() {
                 console.log('Running keyvault action against with secrets ' + secrets);
 
                 var actionParameters = new KeyVaultActionParameters().getKeyVaultActionParameters(handler);
-                downloadSecrets(handler, environment, actionParameters);
+                await downloadSecrets(handler, environment, actionParameters);
             }
            
             var keyVaultPairsInput = core.getInput("key_vault_with_secret_file_pairs")
@@ -59,7 +59,7 @@ async function run() {
                     console.log('Running keyvault action against with secret file ' + secretsFilePath);
 
                     var actionParameters = new KeyVaultActionParameters().getKeyVaultActionParametersForSpecificKeyVaultWithFile(handler, keyVault, secretsFilePath);
-                    downloadSecrets(handler, environment, actionParameters);
+                    await downloadSecrets(handler, environment, actionParameters);
                 }
             }
         }        
