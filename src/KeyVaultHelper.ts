@@ -36,6 +36,7 @@ export class KeyVaultHelper {
         if (this.keyVaultActionParameters.secretsFilter && this.keyVaultActionParameters.secretsFilter.length === 1 && this.keyVaultActionParameters.secretsFilter[0] === "*") {
              return this.downloadAllSecrets();
         } else {
+            console.log(`Downloading selected secrets with filter: ${this.keyVaultActionParameters.secretsFilter}`);
             let selectedSecrets = this.readKeyValuesFromFilter(this.keyVaultActionParameters.secretsFilter);
             return this.downloadSelectedSecrets(selectedSecrets);
         }
@@ -73,6 +74,8 @@ export class KeyVaultHelper {
         return new Promise<void>((resolve, reject) => {
             var getSecretValuePromises: Promise<any>[] = [];
             secretsMap.forEach((secretName: string, secretEnv: string) => {
+                console.log(util.format("Downloading secret %s", secretName));
+
                 getSecretValuePromises.push(this.downloadSecretValue(secretName, secretEnv));
             });
 
@@ -85,14 +88,14 @@ export class KeyVaultHelper {
     }
 
     private downloadSecretValue(secretName: string, secretEnv: string): Promise<any> {
-        //secretName = secretName.trim();
-
         return new Promise<void>((resolve, reject) => {
             this.keyVaultClient.getSecretValue(secretName, (error, secretValue) => {
                 if (error) {
+                    console.log(util.format("Failed to download secret %s", secretName));
                     core.setFailed(util.format("Could not download the secret %s", secretName));
                 }
                 else {
+                    console.log(util.format("Downloaded secret %s", secretName));
                     this.setVaultVariable(secretEnv, secretValue);
                 }
                 
@@ -126,13 +129,22 @@ export class KeyVaultHelper {
 
     private readKeyValuesFromFile(filePattern: string): Map<string, string> {
       const keyValueMap: Map<string, string> = new Map();
+      console.log(`Reading key values from file pattern: ${filePattern}`);
       const filePaths = globSync(filePattern);
+      console.log(`Found ${filePaths.length} files matching the pattern: ${filePattern}`);
+
+      if (filePaths.length === 0){
+        core.setFailed("No files found matching the pattern: " + filePattern);
+      }
+
       for (const filePath of filePaths) {
+        console.log(`Reading key values from file: ${filePath}`);
         const fileContent = readFileSync(filePath, 'utf8');
-        const lines = fileContent.split('\n');
+        const lines = fileContent.split(',');
 
         for (const line of lines) {
           const trimmedLine = line.trim();
+          console.log(`Reading key values from line: ${trimmedLine}`);
           if (trimmedLine) {
             const [key, value] = trimmedLine.split('=');
             keyValueMap.set(key.trim(), value.trim());
