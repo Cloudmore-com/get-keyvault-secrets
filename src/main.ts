@@ -47,8 +47,8 @@ async function run() {
             if (keyVaultPairsInput){            
                 // param key_vault_with_secret_file_pairs in github action looks like this:
                 //      key_vault_with_secret_file_pairs: |
-                //          infra-eu-dev-kv=.github/env/eu/dev/key_vault1.env,
-                //          business-eu-dev-kv=.github/env/eu/dev/key_vault2.env
+                //          name-of-the-keyvault=.github/env/eu/dev/key_vault1.env,
+                //          another-name-of-the-key-vault=.github/env/eu/dev/key_vault2.env
                 var keyVaultPairs = keyVaultPairsInput.split(',');
 
                 for (var i = 0; i < keyVaultPairs.length; i++) {
@@ -97,5 +97,6 @@ async function executeAzCliCommand(command: string) {
     }
     return stdout;
 }
+
 
 run();
